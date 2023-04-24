@@ -27,7 +27,10 @@ https://huggingface.co/metarank/all-MiniLM-L6-v2/blob/main/convert.py
 
 The Metarank config file is stored in this repo: [config.yml](https://github.com/metarank/esci-playground/blob/master/config.yml)
 
-To speed-up all the experiments, we used precomputed embeddings for all models. Otherwise bootstrapping over CE models takes ages.
+To speed-up all the experiments, we used precomputed embeddings for all models:
+* with no caching bootstrapping over CE models takes hours.
+* pre-computed embeddings for all experiments are ~30GB, so we're not sharing them for the sake of saving bandwidth. 
+If you need them, contact us in [Slack](https://metarank.ai/slack)
 
 ## BM25
 
@@ -37,6 +40,16 @@ java -jar metarank.jar termfreq --data events.jsonl --out tf-title.json --fields
 ```
 
 Term-freq files should be build per field to match the behavior of Lucene.
+
+## Running the experiments
+
+* Download the dataset: [s3://esci-s/metarank-esci-small.jsonl.zst](https://esci-s.s3.amazonaws.com/metarank-esci-small.jsonl.zst)
+* Get the config file: [config.yml](https://github.com/metarank/esci-playground/blob/master/config.yml)
+* [optional] Compute term-freqs over all fields with `metarank termfreq`
+
+Then take a look into the `config.yml` file: there is a section with feature definitions, and the actual feature layout over different models. In this example there's only a single model, which includes all the features:
+* you should uncomment the features you need to be included into the ensemble
+* then run `metarank standalone -d events.jsonl -c config.yml` and write down the NDCG values
 
 ## License
 
